@@ -3,6 +3,7 @@ package com.example.myapplicationtlg.api.repository
 import android.util.Log
 import com.example.myapplicationtlg.api.Client
 import com.example.myapplicationtlg.entity.Exercise
+import com.example.myapplicationtlg.entity.RoutineWithExercises
 import com.example.myapplicationtlg.entity.Workout
 import com.example.myapplicationtlg.entity.WorkoutWithExercises
 import com.example.myapplicationtlg.entity.relation.WorkoutExercise
@@ -35,6 +36,34 @@ class WorkoutRepository {
             supabaseClient.from("exercise_workout").insert(workoutExerciseData)
         }
 
+    }
+
+    suspend fun saveRoutineAsWorkout(routine: RoutineWithExercises){
+        val workoutData = mapOf(
+            "name" to routine.name,
+            "description" to routine.description
+        )
+        val workoutInsert = supabaseClient.from("workout").insert(workoutData){
+            select(Columns.ALL)
+        }.decodeSingle<Workout>()
+
+        for (exercise in routine.exercises){
+            val workoutExerciseData = mapOf(
+                "id_exercise" to exercise.id,
+                "id_workout" to workoutInsert.id
+            )
+
+            supabaseClient.from("exercise_workout").insert(workoutExerciseData)
+        }
+
+    }
+
+    suspend fun deleteWorkoutById(id: Int){
+        supabaseClient.from("workout").delete{
+            filter {
+                Workout::id eq id
+            }
+        }
     }
 
     suspend fun getWorkouts(): List<WorkoutWithExercises> {

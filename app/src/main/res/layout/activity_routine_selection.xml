@@ -13,11 +13,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Nuestras Rutinas"
+        android:textAlignment="center"
         android:textSize="24sp"
         android:textStyle="bold"
-        android:textAlignment="center"
-        android:layout_marginLeft="100dp"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/routineRecyclerView"

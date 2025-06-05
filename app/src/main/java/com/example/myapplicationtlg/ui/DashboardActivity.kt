@@ -2,6 +2,7 @@ package com.example.myapplicationtlg.ui
 
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -14,6 +15,7 @@ import kotlinx.coroutines.launch
 class DashboardActivity : BaseActivity() {
     private lateinit var binding: ActivityDashboardBinding
     private lateinit var rep: WorkoutRepository
+    private lateinit var launcher: ActivityResultLauncher<Intent>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,7 +29,7 @@ class DashboardActivity : BaseActivity() {
 
         updateData()
 
-        val launcher = registerForActivityResult(
+        launcher = registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()
         ) { result ->
             if (result.resultCode == RESULT_OK) {
@@ -36,7 +38,12 @@ class DashboardActivity : BaseActivity() {
         }
 
         binding.fabAddWorkout.setOnClickListener {
-            launcher.launch(Intent(this, WorkoutFormActivity::class.java))        }
+            launcher.launch(Intent(this, WorkoutFormActivity::class.java))
+        }
+
+        binding.fabAddRoutine.setOnClickListener {
+            launcher.launch(Intent(this, RoutineSelectionActivity::class.java))
+        }
     }
 
     fun updateData(){
@@ -44,10 +51,10 @@ class DashboardActivity : BaseActivity() {
             val workouts = rep.getWorkouts()
             val adapter = WorkoutAdapter(workouts){
                 val intent =
-                    Intent(this@DashboardActivity, WorkoutDetailActivity::class.java).apply {
-                        putExtra("workout", it)
-                        startActivity(this)
-                    }
+                    Intent(this@DashboardActivity, WorkoutDetailActivity::class.java)
+
+                intent.putExtra("workout", it)
+                launcher.launch(intent)
             }
 
             binding.rvWorkouts.adapter = adapter
